@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#start-screen {
+  font-size: 2em;
+  text-align: center;
+  margin-top: 25%;
+}
+#start-screen button {
+  font-size: 0.8em;
+  background: transparent;
+  padding: 8px 16px;
+}
+#question-screen {
+  margin-left: 15%;
+}
+
+#question-screen #question {
+  font-size: 1.3em;
+  margin-top: 20%;
+  margin-left: 30%;
+}
+#question-screen label {
+  font-size: 1.3em;
+  display: block;
+  margin-top: 1%;
+  margin-left: 35%;
+}
+
+#question-screen #next-button {
+  margin-top: 4%;
+  background: transparent;
+  padding: 7px 14px;
+  font-size: 1em;
+  margin-left: 37%;
+}
+#question-screen #previous-button {
+  margin-top: 4%;
+  background: transparent;
+  padding: 7px 14px;
+  font-size: 1em;
+  margin-left: 37%;
+}
+
+#result-screen {
+  text-align: center;
+  margin-top: 50%;
+  font-size: 2em;
+}
+#result-screen #restart-button {
+  margin-top: 5%;
+  background: transparent;
+  padding: 8px 16px;
+  font-size: 0.7em;
+}
+</style>
+</head>
+<body>
+<section id="start-screen">
+  <h2>Quiz App</h2>
+  <button id="start-button">Start Quiz</button>
+</section>
+<section id="question-screen" style="display:none">
+  <h4 id="question"></h4>
+  <label id="option-0"><input type="radio" name="option"><span></span></label>
+  <label id="option-1"><input type="radio" name="option"><span></span></label>
+  <label id="option-2"><input type="radio" name="option"><span></span></label>
+  <label id="option-3"><input type="radio" name="option"><span></span></label>
+  <button id="previous-button">Previous</button>
+  <button id="next-button">Next</button>
+</section>
+<section id="result-screen" style="display: none">
+  <div id="result"></div>
+  <button id="restart-button">Restart</button>
+</section>
+</body>
+<script>
+const questions = [
+  {
+    question: "Q.1 Which is capital of India?",
+    options: ["Maharashtra", "Delhi", "Mumbai", "Kerala"],
+    correctAnswerIndex: 1
+  },
+  {
+    question: " Q.2 Which is capital of Maharashtra?",
+    options: ["Satara", "Sangli", "Mumbai", "Nanded"],
+    correctAnswerIndex: 2
+  },
+  {
+    question: "Q.3 Which state has the largest population?",
+    options: ["Uttar pradesh", "Maharashtra", "Bihar", "Andra pradesh"],
+    correctAnswerIndex: 0
+  }
+];
+
+const $ = (selector) => document.querySelector(selector);
+
+let totalCorrectAnswers = 0;
+let questionIndex = 0;
+
+function showQuestions() {
+  const currentQuestion = questions[questionIndex];
+  $("#question").innerHTML = currentQuestion.question;
+  currentQuestion.options.forEach((option, index) => {
+    $(`#option-${index} span`).innerHTML = option;
+  });
+}
+
+function showNextQuestion() {
+  for (let i = 0; i < 4; i++) {
+    $(`#option-${i} input`).checked = false;
+  }
+  checkForCorrectAnswer();
+  if (questionIndex == questions.length - 1) {
+    $("#previous-button").disabled = false;
+    $("#next-button").disabled = true;
+    showResult();
+  } else {
+    questionIndex++;
+    showQuestions();
+  }
+}
+function showPreviousQuestion() {
+  for (let i = 0; i < 4; i++) {
+    $(`#option-${i} input`).checked = false;
+  }
+
+  checkForCorrectAnswer();
+  if (questionIndex == 0) {
+    $("#previous-button").disabled = true;
+    $("#next-button").disabled = false;
+  } else {
+    questionIndex--;
+    showQuestions();
+  }
+}
+
+function showResult() {
+  $("#question-screen").style.display = "none";
+  $("#result-screen").style.display = "block";
+
+  $(
+    "#result"
+  ).innerHTML = `Result: ${totalCorrectAnswers} out of ${questions.length}`;
+}
+
+function checkForCorrectAnswer() {
+  const index = questions[questionIndex].correctAnswerIndex;
+  const isCorrect = $(`#option-${index} input`).checked;
+
+  if (isCorrect) totalCorrectAnswers++;
+}
+
+$("#start-button").addEventListener("click", function () {
+  $("#start-screen").style.display = "none";
+  $("#question-screen").style.display = "block";
+  showQuestions();
+});
+
+$("#next-button").addEventListener("click", function () {
+  checkForCorrectAnswer();
+  showNextQuestion();
+});
+
+$("#previous-button").addEventListener("click", function () {
+  showPreviousQuestion();
+});
+
+$("#restart-button").addEventListener("click", function () {
+  questionIndex = 0;
+  totalCorrectAnswers = 0;
+  showQuestions();
+
+  $("#question-screen").style.display = "block";
+  $("#result-screen").style.display = "none";
+});
+</script>
+</html>
